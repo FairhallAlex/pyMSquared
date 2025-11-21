@@ -2170,9 +2170,9 @@ if __name__ == "__main__":
             print('No wavemeter connected.')
             raise Exception('No wavemeter connected. Use "poll_wave_t" command for tuning lookup table.')
         else:
-            print(f'Starting wavelength: {poll_wave['current_wavelength'][0]}') ## Note the [0] index since integers are returned inside a list. 
-            _ = solstis.set_wave_m(poll_wave['current_wavelength']+1)           ## Move wavelength by 1 nm
-            time.sleep(0.5)
+            print(f'Starting wavelength: {poll_wave['current_wavelength'][0]}')     ## Note the [0] index since integers are returned inside a list. 
+            _ = solstis.set_wave_m(poll_wave['current_wavelength'][0]+1)            ## Move wavelength by 1 nm
+            time.sleep(0.5) ## Just a waiting period to let the laser settle. Not necessary for high power or well-aligned systems.
             wave2 = solstis.poll_wave_m()
             if wave2['status'] == 1:
                 raise Exception('No wavemeter connected. Use "poll_wave_t" command for tuning lookup table.')

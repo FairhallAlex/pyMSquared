@@ -2158,25 +2158,25 @@ if __name__ == "__main__":
     import time    
     
     try:
-        with SolsTiS(port=39902,host='192.168.1.222') as solstis:
-            solstis.start_link()
-            print(solstis.ping('Hello World'))
-            status = solstis.get_status()
-            for k,v in status.items():
-                print(f'{k}:\t\t{v}')
-            poll_wave = solstis.poll_wave_m() ## Returns a dictionary of values including status and wavelength
-            
-            if poll_wave['status'] == 1:
-                print('No wavemeter connected.')
+        solstis = SolsTiS(port=39902,host='192.168.1.222') ## I have not implemented context manager for this, but it should be straightforward if desired.
+        solstis.start_link()
+        print(solstis.ping('Hello World'))
+        status = solstis.get_status()
+        for k,v in status.items():
+            print(f'{k}:\t\t{v}')
+        poll_wave = solstis.poll_wave_m() ## Returns a dictionary of values including status and wavelength
+        
+        if poll_wave['status'] == 1:
+            print('No wavemeter connected.')
+            raise Exception('No wavemeter connected. Use "poll_wave_t" command for tuning lookup table.')
+        else:
+            print(f'Starting wavelength: {poll_wave['current_wavelength'][0]}') ## Note the [0] index since integers are returned inside a list. 
+            _ = solstis.set_wave_m(poll_wave['current_wavelength']+1)           ## Move wavelength by 1 nm
+            time.sleep(0.5)
+            wave2 = solstis.poll_wave_m()
+            if wave2['status'] == 1:
                 raise Exception('No wavemeter connected. Use "poll_wave_t" command for tuning lookup table.')
             else:
-                print(f'Starting wavelength: {poll_wave['current_wavelength'][0]}') ## Note the [0] index since integers are returned inside a list. 
-                _ = solstis.set_wave_m(poll_wave['current_wavelength']+1)           ## Move wavelength by 1 nm
-                time.sleep(0.5)
-                wave2 = solstis.poll_wave_m()
-                if wave2['status'] == 1:
-                    raise Exception('No wavemeter connected. Use "poll_wave_t" command for tuning lookup table.')
-                else:
-                    print(f'Final wavelength: {poll_wave['current_wavelength'][0]}')
+                print(f'Final wavelength: {poll_wave['current_wavelength'][0]}')
     except Exception as e:
         print(f'Something went wrong!\n\t{e}')
